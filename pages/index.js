@@ -1,12 +1,13 @@
-import { PrismaClient } from "@prisma/client"
-import { List, ListItem, ListIcon, Image, Flex, Stack, Heading, Text } from "@chakra-ui/core";
-import Link from 'next/link'
+import { PrismaClient } from '@prisma/client';
+import { List, Heading } from '@chakra-ui/core';
+
+import Song from '../components/Song';
 
 export async function getStaticProps() {
-  const prisma = new PrismaClient()
+  const prisma = new PrismaClient();
   const songs = await prisma.song.findMany({
     include: { artist: true }
-  })
+  });
 
   return {
     props: {
@@ -15,30 +16,15 @@ export async function getStaticProps() {
   };
 }
 
-const Song = ({name, id, artist, albumCoverUrl}) => (
-  <ListItem border="1px solid" borderColor="gray.200" borderRadius={4} my={2} bg="white" key={id}>
-        <Link href="/songs/[id]" as={`/songs/${id}`} passHref>
-          <Flex as="a">
-            <Image
-              size="100px"
-              objectFit="cover"
-              src={albumCoverUrl}
-              alt={name}
-              mr={4}
-            />
-            <Stack>
-              <Heading size="lg">{name}</Heading>
-              <Text color="gray.700">{artist.name}</Text>
-            </Stack>
-          </Flex>
-        </Link>
-      </ListItem>
-);
-
 export default ({ songs }) => (
-  <ul>
-    {songs.map((song) => (
-      <Song {...song} />
-    ))}
-  </ul>
+  <>
+    <Heading mt={8} mb={4} fontWeight="800">
+      My Songs
+    </Heading>
+    <List>
+      {songs.map((song) => (
+        <Song key={song.id} {...song} />
+      ))}
+    </List>
+  </>
 );
